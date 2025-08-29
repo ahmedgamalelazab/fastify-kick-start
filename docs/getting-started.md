@@ -5,7 +5,7 @@ This guide will help you get up and running with Fastify Kick-Start, a powerful 
 ## Installation
 
 ```bash
-npm install @jimmies-workspace/fastify-kick-start reflect-metadata
+npm install @jimmy-nitron/fastify-kick-start reflect-metadata
 ```
 
 > **Note**: `reflect-metadata` is required for decorators to work properly.
@@ -18,7 +18,7 @@ Let's create a simple API with a user controller:
 
 ```typescript
 // controllers/user.controller.ts
-import { Controller, Get, Post, Opts } from '@jimmies-workspace/fastify-kick-start';
+import { Controller, Get, Post, Opts } from '@jimmy-nitron/fastify-kick-start';
 import { Type } from '@sinclair/typebox';
 
 const UserSchema = Type.Object({
@@ -112,7 +112,7 @@ export class UserController {
 
 ```typescript
 // server.ts
-import { createQuickServer } from '@jimmies-workspace/fastify-kick-start';
+import { createQuickServer } from '@jimmy-nitron/fastify-kick-start';
 import { UserController } from './controllers/user.controller';
 
 async function startServer() {
@@ -219,7 +219,7 @@ class UserController {
 Apply middleware to controllers or routes:
 
 ```typescript
-import { Middleware, loggingMiddleware, rateLimitMiddleware } from '@jimmies-workspace/fastify-kick-start';
+import { Middleware, loggingMiddleware, rateLimitMiddleware } from '@jimmy-nitron/fastify-kick-start';
 
 @Middleware([loggingMiddleware(), rateLimitMiddleware()])
 @Controller('/api')
@@ -237,7 +237,7 @@ export class ApiController {
 For more control, use the server builder:
 
 ```typescript
-import { createServer } from '@jimmies-workspace/fastify-kick-start';
+import { createServer } from '@jimmy-nitron/fastify-kick-start';
 
 const app = await createServer()
   .withLogging({ level: 'debug', prettyPrint: true })

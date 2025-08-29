@@ -6,7 +6,7 @@
  *
  * @example
  * ```typescript
- * import { Controller, Get, createQuickServer } from '@jimmies-workspace/fastify-kick-start';
+ * import { Controller, Get, createQuickServer } from '@jimmy-nitron/fastify-kick-start';
  *
  * @Controller('/api/users')
  * class UserController {

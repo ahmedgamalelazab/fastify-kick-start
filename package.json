@@ -1,5 +1,5 @@
 {
-  "name": "@jimmies-workspace/fastify-kick-start",
+  "name": "@jimmy-nitron/fastify-kick-start",
   "version": "1.0.0",
   "description": "A comprehensive, reusable Fastify library with decorators, plugins, and Swagger integration",
   "main": "dist/index.js",
@@ -73,12 +73,12 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/blabs/fastify-kick-start.git"
+    "url": "git+https://github.com/ahmedgamalelazab/fastify-kick-start"
   },
   "bugs": {
-    "url": "https://github.com/blabs/fastify-kick-start/issues"
+    "url": "https://github.com/ahmedgamalelazab/fastify-kick-start/issues"
   },
-  "homepage": "https://github.com/blabs/fastify-kick-start#readme",
+  "homepage": "https://github.com/ahmedgamalelazab/fastify-kick-start#readme",
   "peerDependencies": {
     "fastify": "^5.0.0",
     "reflect-metadata": "^0.2.0"

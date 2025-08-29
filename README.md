@@ -17,15 +17,15 @@ A comprehensive, reusable Fastify library with decorators, plugins, and Swagger 
 ### Installation
 
 ```bash
-npm install @jimmies-workspace/fastify-kick-start
+npm install @jimmy-nitron/fastify-kick-start
 # or
-yarn add @jimmies-workspace/fastify-kick-start
+yarn add @jimmy-nitron/fastify-kick-start
 ```
 
 ### Basic Example
 
 ```typescript
-import { Controller, Get, createQuickServer } from '@jimmies-workspace/fastify-kick-start';
+import { Controller, Get, createQuickServer } from '@jimmy-nitron/fastify-kick-start';
 import { Type } from '@sinclair/typebox';
 
 @Controller('/api/users')
@@ -130,7 +130,7 @@ class ApiController {
 For rapid development with sensible defaults:
 
 ```typescript
-import { createQuickServer } from '@jimmies-workspace/fastify-kick-start';
+import { createQuickServer } from '@jimmy-nitron/fastify-kick-start';
 
 const app = await createQuickServer([UserController, ProductController], {
   swagger: {
@@ -147,7 +147,7 @@ const app = await createQuickServer([UserController, ProductController], {
 For full control over server configuration:
 
 ```typescript
-import { createServer } from '@jimmies-workspace/fastify-kick-start';
+import { createServer } from '@jimmy-nitron/fastify-kick-start';
 
 const app = await createServer()
   .withLogging({
@@ -197,7 +197,7 @@ import {
   rateLimitMiddleware,
   securityHeadersMiddleware,
   validationMiddleware,
-} from '@jimmies-workspace/fastify-kick-start';
+} from '@jimmy-nitron/fastify-kick-start';
 
 @Middleware([
   corsMiddleware({ origin: 'https://example.com' }),
