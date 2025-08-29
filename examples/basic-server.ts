@@ -1,19 +1,13 @@
 /**
  * Basic Server Example
- * 
+ *
  * This example demonstrates the simplest way to create a Fastify server
  * using the Kick-Start library with minimal configuration.
  */
 
 import { Type } from '@sinclair/typebox';
 
-import {
-    Controller,
-    Get,
-    Opts,
-    Post,
-    createQuickServer,
-} from '../src';
+import { Controller, Get, Opts, Post, createQuickServer } from '../src';
 
 // Define schemas using TypeBox
 const UserSchema = Type.Object({
@@ -76,7 +70,7 @@ export class UserController {
   async getUserById(req: any, reply: any) {
     const userId = parseInt(req.params.id);
     const user = users.find(u => u.id === userId);
-    
+
     if (!user) {
       return reply.code(404).send({
         statusCode: 404,
@@ -84,7 +78,7 @@ export class UserController {
         message: 'User not found',
       });
     }
-    
+
     return user;
   }
 
@@ -107,7 +101,7 @@ export class UserController {
   })
   async createUser(req: any, reply: any) {
     const { name, email } = req.body;
-    
+
     // Check if email already exists
     if (users.some(u => u.email === email)) {
       return reply.code(400).send({
@@ -116,16 +110,16 @@ export class UserController {
         message: 'Email already exists',
       });
     }
-    
+
     const newUser = {
       id: Math.max(...users.map(u => u.id)) + 1,
       name,
       email,
       createdAt: new Date().toISOString(),
     };
-    
+
     users.push(newUser);
-    
+
     return reply.code(201).send(newUser);
   }
 }
@@ -180,7 +174,7 @@ async function startServer() {
     const host = process.env.HOST || 'localhost';
 
     await app.listen({ port, host });
-    
+
     console.log(`🚀 Server running at http://${host}:${port}`);
     console.log(`📚 API Documentation available at http://${host}:${port}/docs`);
   } catch (error) {

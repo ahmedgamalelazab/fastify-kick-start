@@ -1,6 +1,6 @@
 /**
  * @fileoverview Core decorators for Fastify Kick-Start library
- * 
+ *
  * This module exports all the decorators needed to build REST APIs with Fastify.
  * The decorators provide a clean, annotation-based way to define controllers,
  * routes, middleware, authentication, and other HTTP concerns.
@@ -15,9 +15,6 @@ export * from './route.decorator';
 
 // Configuration decorators
 export * from './options.decorator';
-
-// Security decorators
-export * from './auth.decorator';
 
 // Middleware decorators
 export * from './middleware.decorator';

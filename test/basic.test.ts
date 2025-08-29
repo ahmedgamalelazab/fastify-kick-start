@@ -4,13 +4,8 @@
 
 import { Type } from '@sinclair/typebox';
 
-import {
-    Controller,
-    Get,
-    Opts,
-    Post,
-    createQuickServer,
-} from '../src';
+import { Controller, Get, Opts, Post, createQuickServer } from '../src';
+import { FastifyInstance } from 'fastify/types/instance';
 
 // Test controller
 @Controller('/test')
@@ -48,7 +43,7 @@ class TestController {
 }
 
 describe('Fastify Kick-Start Library', () => {
-  let app: any;
+  let app: FastifyInstance;
 
   beforeAll(async () => {
     app = await createQuickServer([TestController], {

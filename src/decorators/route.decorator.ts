@@ -14,7 +14,10 @@ const makeRouteDecorator = (httpMethod: HttpMethod) => {
       }
 
       // Get existing routes
-      const routes = Reflect.getMetadata(METADATA_KEYS.ROUTES, target.constructor) as RouteDefinition[];
+      const routes = Reflect.getMetadata(
+        METADATA_KEYS.ROUTES,
+        target.constructor
+      ) as RouteDefinition[];
 
       // Add new route definition
       routes.push({
@@ -31,9 +34,9 @@ const makeRouteDecorator = (httpMethod: HttpMethod) => {
 
 /**
  * @Get decorator for HTTP GET requests
- * 
+ *
  * @param path - Optional path for the route. If not provided, uses the method name
- * 
+ *
  * @example
  * ```typescript
  * @Controller('/users')
@@ -42,12 +45,12 @@ const makeRouteDecorator = (httpMethod: HttpMethod) => {
  *   async getUsers() {
  *     // GET /users/getUsers
  *   }
- * 
+ *
  *   @Get('/:id')
  *   async getUserById() {
  *     // GET /users/:id
  *   }
- * 
+ *
  *   @Get('/profile')
  *   async getProfile() {
  *     // GET /users/profile
@@ -59,9 +62,9 @@ export const Get = makeRouteDecorator(HttpMethod.GET);
 
 /**
  * @Post decorator for HTTP POST requests
- * 
+ *
  * @param path - Optional path for the route. If not provided, uses the method name
- * 
+ *
  * @example
  * ```typescript
  * @Controller('/users')
@@ -70,7 +73,7 @@ export const Get = makeRouteDecorator(HttpMethod.GET);
  *   async createUser() {
  *     // POST /users/createUser
  *   }
- * 
+ *
  *   @Post('/register')
  *   async register() {
  *     // POST /users/register
@@ -82,9 +85,9 @@ export const Post = makeRouteDecorator(HttpMethod.POST);
 
 /**
  * @Put decorator for HTTP PUT requests
- * 
+ *
  * @param path - Optional path for the route. If not provided, uses the method name
- * 
+ *
  * @example
  * ```typescript
  * @Controller('/users')
@@ -100,9 +103,9 @@ export const Put = makeRouteDecorator(HttpMethod.PUT);
 
 /**
  * @Patch decorator for HTTP PATCH requests
- * 
+ *
  * @param path - Optional path for the route. If not provided, uses the method name
- * 
+ *
  * @example
  * ```typescript
  * @Controller('/users')
@@ -118,9 +121,9 @@ export const Patch = makeRouteDecorator(HttpMethod.PATCH);
 
 /**
  * @Delete decorator for HTTP DELETE requests
- * 
+ *
  * @param path - Optional path for the route. If not provided, uses the method name
- * 
+ *
  * @example
  * ```typescript
  * @Controller('/users')
@@ -136,14 +139,14 @@ export const Delete = makeRouteDecorator(HttpMethod.DELETE);
 
 /**
  * @Head decorator for HTTP HEAD requests
- * 
+ *
  * @param path - Optional path for the route. If not provided, uses the method name
  */
 export const Head = makeRouteDecorator(HttpMethod.HEAD);
 
 /**
  * @Options decorator for HTTP OPTIONS requests
- * 
+ *
  * @param path - Optional path for the route. If not provided, uses the method name
  */
 export const Options = makeRouteDecorator(HttpMethod.OPTIONS);

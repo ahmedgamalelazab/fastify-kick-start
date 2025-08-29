@@ -5,7 +5,6 @@ A comprehensive, reusable Fastify library with decorators, plugins, and Swagger 
 ## Features
 
 - 🎯 **Decorator-based Controllers** - Clean, annotation-driven API development
-- 🔒 **Built-in Authentication** - JWT, API Key, Basic Auth, and custom strategies
 - 📚 **Auto-generated Documentation** - Swagger/OpenAPI 3.0 with interactive UI
 - 🛡️ **Security Middleware** - Rate limiting, CORS, security headers, and more
 - 🔧 **Highly Configurable** - Flexible server builder with sensible defaults
@@ -66,11 +65,11 @@ class UserController {
 ```typescript
 @Controller('/api/users')
 class UserController {
-  @Get('/')           // GET /api/users
-  @Post('/')          // POST /api/users
-  @Put('/:id')        // PUT /api/users/:id
-  @Patch('/:id')      // PATCH /api/users/:id
-  @Delete('/:id')     // DELETE /api/users/:id
+  @Get('/') // GET /api/users
+  @Post('/') // POST /api/users
+  @Put('/:id') // PUT /api/users/:id
+  @Patch('/:id') // PATCH /api/users/:id
+  @Delete('/:id') // DELETE /api/users/:id
   async handleRequest() {}
 }
 ```
@@ -110,28 +109,6 @@ class UserController {
 }
 ```
 
-### @Auth - Authentication
-
-Apply authentication to controllers or individual routes:
-
-```typescript
-// Controller-level auth
-@Auth('jwt')
-@Controller('/protected')
-class ProtectedController {}
-
-// Route-level auth
-@Controller('/mixed')
-class MixedController {
-  @Get('/public')
-  async publicRoute() {}
-
-  @Get('/private')
-  @Auth('apiKey')
-  async privateRoute() {}
-}
-```
-
 ### @Middleware - Custom Middleware
 
 Apply middleware to controllers or routes:
@@ -159,9 +136,9 @@ const app = await createQuickServer([UserController, ProductController], {
   swagger: {
     info: {
       title: 'My API',
-      version: '1.0.0'
-    }
-  }
+      version: '1.0.0',
+    },
+  },
 });
 ```
 
@@ -176,94 +153,37 @@ const app = await createServer()
   .withLogging({
     enabled: true,
     level: 'info',
-    prettyPrint: true
+    prettyPrint: true,
   })
   .withSwagger({
     enabled: true,
     info: {
       title: 'Advanced API',
       description: 'Full-featured REST API',
-      version: '2.0.0'
+      version: '2.0.0',
     },
     components: {
       securitySchemes: {
         bearerAuth: {
           type: 'http',
-          scheme: 'bearer'
-        }
-      }
-    }
+          scheme: 'bearer',
+        },
+      },
+    },
   })
   .withSwaggerUI({
     enabled: true,
-    routePrefix: '/docs'
+    routePrefix: '/docs',
   })
   .withCors({
     enabled: true,
     options: {
       origin: ['http://localhost:3000'],
-      credentials: true
-    }
+      credentials: true,
+    },
   })
   .withControllers([UserController, ProductController])
   .build();
-```
-
-## Authentication
-
-### Built-in Strategies
-
-```typescript
-import { 
-  jwtAuthMiddleware, 
-  apiKeyAuthMiddleware, 
-  basicAuthMiddleware 
-} from '@jimmies-workspace/fastify-kick-start';
-
-// JWT Authentication
-@Auth(jwtAuthMiddleware({
-  secret: 'your-secret',
-  verify: async (payload, req) => {
-    // Custom verification logic
-    return true;
-  }
-}))
-
-// API Key Authentication
-@Auth(apiKeyAuthMiddleware({
-  validate: async (apiKey, req) => {
-    // Validate API key
-    return apiKey === 'valid-key';
-  }
-}))
-
-// Basic Authentication
-@Auth(basicAuthMiddleware({
-  validate: async (username, password, req) => {
-    // Validate credentials
-    return username === 'admin' && password === 'secret';
-  }
-}))
-```
-
-### Custom Authentication
-
-```typescript
-const customAuth: AuthStrategy = {
-  name: 'custom',
-  authenticate: async (req, reply) => {
-    // Custom authentication logic
-    const token = req.headers['x-custom-token'];
-    if (!token) {
-      return reply.code(401).send({ error: 'Missing token' });
-    }
-    // Validate token...
-  }
-};
-
-@Auth(customAuth)
-@Controller('/custom-auth')
-class CustomAuthController {}
 ```
 
 ## Middleware
@@ -276,7 +196,7 @@ import {
   loggingMiddleware,
   rateLimitMiddleware,
   securityHeadersMiddleware,
-  validationMiddleware
+  validationMiddleware,
 } from '@jimmies-workspace/fastify-kick-start';
 
 @Middleware([
@@ -285,8 +205,8 @@ import {
   rateLimitMiddleware({ maxRequests: 100, windowMs: 60000 }),
   securityHeadersMiddleware(),
   validationMiddleware({
-    validateBody: (body) => body.name?.length > 0 || 'Name is required'
-  })
+    validateBody: body => body.name?.length > 0 || 'Name is required',
+  }),
 ])
 @Controller('/api')
 class ApiController {}
@@ -351,14 +271,14 @@ const app = await createServer()
     enabled: true,
     handler: (error, req, reply) => {
       req.log.error(error);
-      
+
       const statusCode = error.statusCode || 500;
       reply.code(statusCode).send({
         statusCode,
         error: 'Something went wrong',
-        message: error.message
+        message: error.message,
       });
-    }
+    },
   })
   .build();
 ```
@@ -393,7 +313,6 @@ Check out the `examples/` directory for complete working examples:
 - `@Get(path?)`, `@Post(path?)`, `@Put(path?)`, `@Patch(path?)`, `@Delete(path?)` - HTTP methods
 - `@Prefix(prefix)` - Add route prefix
 - `@Opts(options)` - Fastify route options
-- `@Auth(strategy)` - Authentication
 - `@Middleware(middleware)` - Custom middleware
 
 ### Server Builder
@@ -411,9 +330,6 @@ Check out the `examples/` directory for complete working examples:
 
 ### Middleware
 
-- `jwtAuthMiddleware(options)`
-- `apiKeyAuthMiddleware(options)`
-- `basicAuthMiddleware(options)`
 - `corsMiddleware(options)`
 - `loggingMiddleware(options)`
 - `rateLimitMiddleware(options)`

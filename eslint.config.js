@@ -9,13 +9,21 @@ const jestPlugin = require('eslint-plugin-jest');
 module.exports = [
   js.configs.recommended,
   {
-    files: ['**/*.ts'],
+    files: ['src/**/*.ts'],
     languageOptions: {
       parser: tsParser,
       parserOptions: {
         ecmaVersion: 2022,
         sourceType: 'module',
         project: './tsconfig.json',
+      },
+      globals: {
+        process: 'readonly',
+        Buffer: 'readonly',
+        __dirname: 'readonly',
+        __filename: 'readonly',
+        global: 'readonly',
+        console: 'readonly',
       },
     },
     plugins: {
@@ -32,18 +40,16 @@ module.exports = [
       '@typescript-eslint/explicit-function-return-type': 'off',
       '@typescript-eslint/explicit-module-boundary-types': 'off',
       '@typescript-eslint/no-explicit-any': 'warn',
+      '@typescript-eslint/no-unsafe-argument': 'off',
+      '@typescript-eslint/no-unsafe-member-access': 'off',
+      '@typescript-eslint/no-unsafe-assignment': 'off',
+      '@typescript-eslint/no-unsafe-return': 'off',
+      '@typescript-eslint/no-unsafe-call': 'off',
       '@typescript-eslint/no-non-null-assertion': 'warn',
       'import/order': [
         'error',
         {
-          groups: [
-            'builtin',
-            'external',
-            'internal',
-            'parent',
-            'sibling',
-            'index',
-          ],
+          groups: ['builtin', 'external', 'internal', 'parent', 'sibling', 'index'],
           'newlines-between': 'always',
         },
       ],
@@ -51,11 +57,41 @@ module.exports = [
   },
   {
     files: ['**/*.test.ts', '**/*.spec.ts'],
+    languageOptions: {
+      parser: tsParser,
+      parserOptions: {
+        ecmaVersion: 2022,
+        sourceType: 'module',
+        project: false,
+      },
+      globals: {
+        process: 'readonly',
+        Buffer: 'readonly',
+        __dirname: 'readonly',
+        __filename: 'readonly',
+        global: 'writable',
+        describe: 'readonly',
+        it: 'readonly',
+        test: 'readonly',
+        expect: 'readonly',
+        beforeAll: 'readonly',
+        afterAll: 'readonly',
+        beforeEach: 'readonly',
+        afterEach: 'readonly',
+        jest: 'readonly',
+      },
+    },
     plugins: {
       jest: jestPlugin,
+      '@typescript-eslint': tsPlugin,
+      prettier: prettierPlugin,
     },
     rules: {
       ...jestPlugin.configs.recommended.rules,
+      ...tsPlugin.configs.recommended.rules,
+      'prettier/prettier': 'error',
+      '@typescript-eslint/no-explicit-any': 'warn',
+      '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
     },
   },
   {
@@ -66,6 +102,7 @@ module.exports = [
       'coverage/**',
       '*.js',
       '!eslint.config.js',
+      'test/setup.ts',
     ],
   },
 ];

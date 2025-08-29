@@ -8,7 +8,7 @@ import { ControllerConstructor, ServerBuilderOptions } from '../types';
 
 /**
  * Fastify server builder with opinionated defaults and plugin integration
- * 
+ *
  * This builder creates a Fastify instance with common plugins and configurations
  * pre-configured for typical REST API development. It includes:
  * - TypeBox type provider for schema validation
@@ -42,7 +42,7 @@ export class FastifyServerBuilder {
     prettyPrint?: boolean;
   }): this {
     this.builderOptions.logging = { ...this.builderOptions.logging, ...options };
-    
+
     if (options.enabled !== false) {
       this.fastifyOptions.logger = {
         level: options.level || 'info',
@@ -59,7 +59,7 @@ export class FastifyServerBuilder {
         }),
       };
     }
-    
+
     return this;
   }
 
@@ -120,10 +120,13 @@ export class FastifyServerBuilder {
 
     // Register CORS if enabled
     if (this.builderOptions.cors?.enabled !== false) {
-      await app.register(cors, this.builderOptions.cors?.options || {
-        origin: true,
-        credentials: true,
-      });
+      await app.register(
+        cors,
+        this.builderOptions.cors?.options || {
+          origin: true,
+          credentials: true,
+        }
+      );
     }
 
     // Register custom error handler
@@ -133,7 +136,10 @@ export class FastifyServerBuilder {
     }
 
     // Register Swagger documentation
-    if (this.builderOptions.swagger?.enabled !== false || this.builderOptions.swaggerUi?.enabled !== false) {
+    if (
+      this.builderOptions.swagger?.enabled !== false ||
+      this.builderOptions.swaggerUi?.enabled !== false
+    ) {
       await app.register(swaggerPluginFactory, {
         swagger: this.builderOptions.swagger,
         swaggerUi: this.builderOptions.swaggerUi,
@@ -154,7 +160,7 @@ export class FastifyServerBuilder {
 
     // Add health check endpoint if no controllers are registered
     if (this.controllers.length === 0) {
-      app.get('/health', async () => ({
+      app.get('/health', () => ({
         status: 'ok',
         timestamp: new Date().toISOString(),
       }));
@@ -168,13 +174,14 @@ export class FastifyServerBuilder {
    */
   private defaultErrorHandler = (error: Error, req: any, reply: any) => {
     const statusCode = (error as any).statusCode || 500;
-    
+
     req.log.error(error, 'Request error');
 
     // Don't expose internal errors in production
-    const message = statusCode >= 500 && process.env.NODE_ENV === 'production'
-      ? 'Internal Server Error'
-      : error.message;
+    const message =
+      statusCode >= 500 && process.env.NODE_ENV === 'production'
+        ? 'Internal Server Error'
+        : error.message;
 
     reply.code(statusCode).send({
       statusCode,
@@ -228,7 +235,9 @@ export const createQuickServer = async (
       info: {
         title: 'API Documentation',
         version: '1.0.0',
+        ...options.swagger?.info,
       },
+      ...options.swagger,
     })
     .withSwaggerUI({ enabled: true })
     .withCors({ enabled: true })

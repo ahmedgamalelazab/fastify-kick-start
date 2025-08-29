@@ -4,16 +4,18 @@ import { MiddlewareFunction } from '../types';
 
 /**
  * CORS middleware
- * 
+ *
  * This middleware handles Cross-Origin Resource Sharing (CORS) headers.
  */
-export const corsMiddleware = (options: {
-  origin?: string | string[] | boolean;
-  methods?: string[];
-  allowedHeaders?: string[];
-  credentials?: boolean;
-  maxAge?: number;
-} = {}): MiddlewareFunction => {
+export const corsMiddleware = (
+  options: {
+    origin?: string | string[] | boolean;
+    methods?: string[];
+    allowedHeaders?: string[];
+    credentials?: boolean;
+    maxAge?: number;
+  } = {}
+): MiddlewareFunction => {
   const {
     origin = '*',
     methods = ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
@@ -52,16 +54,23 @@ export const corsMiddleware = (options: {
 
 /**
  * Request logging middleware
- * 
+ *
  * This middleware logs incoming requests with timing information.
  */
-export const loggingMiddleware = (options: {
-  level?: 'debug' | 'info' | 'warn' | 'error';
-  includeBody?: boolean;
-  includeHeaders?: boolean;
-  excludePaths?: string[];
-} = {}): MiddlewareFunction => {
-  const { level = 'info', includeBody = false, includeHeaders = false, excludePaths = [] } = options;
+export const loggingMiddleware = (
+  options: {
+    level?: 'debug' | 'info' | 'warn' | 'error';
+    includeBody?: boolean;
+    includeHeaders?: boolean;
+    excludePaths?: string[];
+  } = {}
+): MiddlewareFunction => {
+  const {
+    level = 'info',
+    includeBody = false,
+    includeHeaders = false,
+    excludePaths = [],
+  } = options;
 
   return async (req: FastifyRequest, reply: FastifyReply) => {
     const startTime = Date.now();
@@ -89,36 +98,40 @@ export const loggingMiddleware = (options: {
 
     req.log[level]('Request started', logData);
 
-    // Log response when finished
-    reply.addHook('onSend', async () => {
+    // Log response when finished - we'll use the reply's raw property for the hook
+    const originalSend = reply.send.bind(reply);
+    reply.send = function (payload: any) {
       const duration = Date.now() - startTime;
       req.log[level]('Request completed', {
         method,
         url,
         statusCode: reply.statusCode,
         duration: `${duration}ms`,
-      });
-    });
+      } as any);
+      return originalSend(payload);
+    };
   };
 };
 
 /**
  * Rate limiting middleware
- * 
+ *
  * This is a simple in-memory rate limiter. For production use,
  * consider using a more robust solution like Redis-based rate limiting.
  */
-export const rateLimitMiddleware = (options: {
-  windowMs?: number;
-  maxRequests?: number;
-  keyGenerator?: (req: FastifyRequest) => string;
-  skipSuccessfulRequests?: boolean;
-  skipFailedRequests?: boolean;
-} = {}): MiddlewareFunction => {
+export const rateLimitMiddleware = (
+  options: {
+    windowMs?: number;
+    maxRequests?: number;
+    keyGenerator?: (req: FastifyRequest) => string;
+    skipSuccessfulRequests?: boolean;
+    skipFailedRequests?: boolean;
+  } = {}
+): MiddlewareFunction => {
   const {
     windowMs = 15 * 60 * 1000, // 15 minutes
     maxRequests = 100,
-    keyGenerator = (req) => req.ip,
+    keyGenerator = req => req.ip,
     skipSuccessfulRequests = false,
     skipFailedRequests = false,
   } = options;
@@ -165,30 +178,34 @@ export const rateLimitMiddleware = (options: {
 
     // Handle skip options
     if (skipSuccessfulRequests || skipFailedRequests) {
-      reply.addHook('onSend', async () => {
-        const shouldSkip = 
+      const originalSend = reply.send.bind(reply);
+      reply.send = function (payload: any) {
+        const shouldSkip =
           (skipSuccessfulRequests && reply.statusCode < 400) ||
           (skipFailedRequests && reply.statusCode >= 400);
-        
+
         if (shouldSkip) {
-          requestInfo!.count--;
+          requestInfo.count--;
         }
-      });
+        return originalSend(payload);
+      };
     }
   };
 };
 
 /**
  * Request validation middleware
- * 
+ *
  * This middleware provides additional validation beyond schema validation.
  */
-export const validationMiddleware = (options: {
-  validateHeaders?: (headers: any) => boolean | string;
-  validateQuery?: (query: any) => boolean | string;
-  validateParams?: (params: any) => boolean | string;
-  validateBody?: (body: any) => boolean | string;
-} = {}): MiddlewareFunction => {
+export const validationMiddleware = (
+  options: {
+    validateHeaders?: (headers: any) => boolean | string;
+    validateQuery?: (query: any) => boolean | string;
+    validateParams?: (params: any) => boolean | string;
+    validateBody?: (body: any) => boolean | string;
+  } = {}
+): MiddlewareFunction => {
   return async (req: FastifyRequest, reply: FastifyReply) => {
     const { validateHeaders, validateQuery, validateParams, validateBody } = options;
 
@@ -244,16 +261,18 @@ export const validationMiddleware = (options: {
 
 /**
  * Security headers middleware
- * 
+ *
  * This middleware adds common security headers to responses.
  */
-export const securityHeadersMiddleware = (options: {
-  contentSecurityPolicy?: string;
-  xFrameOptions?: string;
-  xContentTypeOptions?: boolean;
-  referrerPolicy?: string;
-  permissionsPolicy?: string;
-} = {}): MiddlewareFunction => {
+export const securityHeadersMiddleware = (
+  options: {
+    contentSecurityPolicy?: string;
+    xFrameOptions?: string;
+    xContentTypeOptions?: boolean;
+    referrerPolicy?: string;
+    permissionsPolicy?: string;
+  } = {}
+): MiddlewareFunction => {
   const {
     contentSecurityPolicy = "default-src 'self'",
     xFrameOptions = 'DENY',
@@ -262,23 +281,23 @@ export const securityHeadersMiddleware = (options: {
     permissionsPolicy = 'geolocation=(), microphone=(), camera=()',
   } = options;
 
-  return async (req: FastifyRequest, reply: FastifyReply) => {
+  return async (_req: FastifyRequest, reply: FastifyReply) => {
     if (contentSecurityPolicy) {
       reply.header('Content-Security-Policy', contentSecurityPolicy);
     }
-    
+
     if (xFrameOptions) {
       reply.header('X-Frame-Options', xFrameOptions);
     }
-    
+
     if (xContentTypeOptions) {
       reply.header('X-Content-Type-Options', 'nosniff');
     }
-    
+
     if (referrerPolicy) {
       reply.header('Referrer-Policy', referrerPolicy);
     }
-    
+
     if (permissionsPolicy) {
       reply.header('Permissions-Policy', permissionsPolicy);
     }

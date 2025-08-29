@@ -1,6 +1,6 @@
 /**
  * Jest test setup file
- * 
+ *
  * This file is run before all tests to set up the testing environment.
  */
 
@@ -39,7 +39,7 @@ declare global {
 expect.extend({
   toBeValidResponse(received) {
     const pass = received && typeof received === 'object' && received.statusCode;
-    
+
     if (pass) {
       return {
         message: () => `expected ${received} not to be a valid response`,
@@ -55,7 +55,7 @@ expect.extend({
 
   toHaveStatusCode(received, statusCode) {
     const pass = received && received.statusCode === statusCode;
-    
+
     if (pass) {
       return {
         message: () => `expected response not to have status code ${statusCode}`,
@@ -63,7 +63,8 @@ expect.extend({
       };
     } else {
       return {
-        message: () => `expected response to have status code ${statusCode}, but got ${received?.statusCode}`,
+        message: () =>
+          `expected response to have status code ${statusCode}, but got ${received?.statusCode}`,
         pass: false,
       };
     }

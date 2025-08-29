@@ -4,13 +4,13 @@ import { METADATA_KEYS, MiddlewareFunction } from '../types';
 
 /**
  * @Middleware decorator for adding middleware to controllers or individual routes
- * 
+ *
  * This decorator can be applied at the class level (affecting all routes in the controller)
  * or at the method level (affecting only that specific route).
  * Multiple middleware can be applied and they will be executed in the order they are defined.
- * 
+ *
  * @param middleware - Single middleware function or array of middleware functions
- * 
+ *
  * @example
  * ```typescript
  * // Apply to entire controller
@@ -23,7 +23,7 @@ import { METADATA_KEYS, MiddlewareFunction } from '../types';
  *   }
  * }
  * ```
- * 
+ *
  * @example
  * ```typescript
  * @Controller('/mixed')
@@ -32,7 +32,7 @@ import { METADATA_KEYS, MiddlewareFunction } from '../types';
  *   async getPublicData() {
  *     // No middleware
  *   }
- * 
+ *
  *   @Get('/protected')
  *   @Middleware(authMiddleware)
  *   async getProtectedData() {
@@ -40,7 +40,7 @@ import { METADATA_KEYS, MiddlewareFunction } from '../types';
  *   }
  * }
  * ```
- * 
+ *
  * @example
  * ```typescript
  * // Stacking multiple middleware decorators
@@ -103,12 +103,15 @@ export const getControllerMiddleware = (target: any): MiddlewareFunction[] => {
 /**
  * Helper function to get middleware for a specific route
  */
-export const getRouteMiddleware = (target: any, methodName: string | symbol): MiddlewareFunction[] => {
+export const getRouteMiddleware = (
+  target: any,
+  methodName: string | symbol
+): MiddlewareFunction[] => {
   const options = Reflect.getMetadata(METADATA_KEYS.OPTIONS, target) as Record<
     string | symbol,
     any
   >;
-  
+
   return options?.[methodName]?.middleware || [];
 };
 
@@ -116,10 +119,13 @@ export const getRouteMiddleware = (target: any, methodName: string | symbol): Mi
  * Helper function to get all effective middleware for a route
  * (combines controller-level and method-level middleware)
  */
-export const getEffectiveMiddleware = (target: any, methodName: string | symbol): MiddlewareFunction[] => {
+export const getEffectiveMiddleware = (
+  target: any,
+  methodName: string | symbol
+): MiddlewareFunction[] => {
   const controllerMiddleware = getControllerMiddleware(target);
   const routeMiddleware = getRouteMiddleware(target, methodName);
-  
+
   return [...controllerMiddleware, ...routeMiddleware];
 };
 
@@ -133,7 +139,7 @@ export const hasMiddleware = (target: any, methodName?: string | symbol): boolea
       return true;
     }
   }
-  
+
   const controllerMiddleware = getControllerMiddleware(target);
   return controllerMiddleware.length > 0;
 };

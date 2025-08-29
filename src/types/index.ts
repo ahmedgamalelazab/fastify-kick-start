@@ -37,7 +37,7 @@ export interface ControllerConstructor {
 /**
  * Route handler function type
  */
-export type RouteHandler = (req: FastifyRequest, reply: FastifyReply) => Promise<any> | any;
+export type RouteHandler = (req: FastifyRequest, reply: FastifyReply) => Promise<unknown>;
 
 /**
  * Middleware function type
@@ -47,14 +47,6 @@ export type MiddlewareFunction = (
   reply: FastifyReply,
   next?: () => void
 ) => Promise<void> | void;
-
-/**
- * Authentication strategy interface
- */
-export interface AuthStrategy {
-  name: string;
-  authenticate: MiddlewareFunction;
-}
 
 /**
  * Controller plugin options
@@ -115,7 +107,6 @@ export const METADATA_KEYS = {
   ROUTES: 'fastify:routes',
   OPTIONS: 'fastify:options',
   MIDDLEWARE: 'fastify:middleware',
-  AUTH: 'fastify:auth',
 } as const;
 
 /**
@@ -123,7 +114,6 @@ export const METADATA_KEYS = {
  */
 export interface RouteOptions extends RouteShorthandOptions {
   middleware?: MiddlewareFunction[];
-  auth?: string | AuthStrategy;
 }
 
 /**
@@ -134,7 +124,6 @@ export interface ControllerMetadata {
   routes: RouteDefinition[];
   options: Record<string | symbol, RouteOptions>;
   middleware?: MiddlewareFunction[];
-  auth?: string | AuthStrategy;
 }
 
 /**

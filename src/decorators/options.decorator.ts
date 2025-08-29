@@ -4,12 +4,12 @@ import { METADATA_KEYS, RouteOptions } from '../types';
 
 /**
  * @Opts decorator for adding Fastify route options to controller methods
- * 
+ *
  * This decorator allows you to specify Fastify route options such as schema validation,
  * response serialization, hooks, and other route-specific configurations.
- * 
+ *
  * @param opts - Fastify RouteShorthandOptions including schema, hooks, etc.
- * 
+ *
  * @example
  * ```typescript
  * @Controller('/users')
@@ -32,7 +32,7 @@ import { METADATA_KEYS, RouteOptions } from '../types';
  *   }
  * }
  * ```
- * 
+ *
  * @example
  * ```typescript
  * @Controller('/auth')
@@ -78,12 +78,15 @@ export const Opts = (opts: RouteOptions): MethodDecorator => {
 /**
  * Helper function to get route options for a specific method
  */
-export const getRouteOptions = (target: any, methodName: string | symbol): RouteOptions | undefined => {
+export const getRouteOptions = (
+  target: any,
+  methodName: string | symbol
+): RouteOptions | undefined => {
   const options = Reflect.getMetadata(METADATA_KEYS.OPTIONS, target) as Record<
     string | symbol,
     RouteOptions
   >;
-  
+
   return options?.[methodName];
 };
 

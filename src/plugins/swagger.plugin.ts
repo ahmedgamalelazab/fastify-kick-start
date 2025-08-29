@@ -60,7 +60,11 @@ const defaultSwaggerConfig: FastifyDynamicSwaggerOptions = {
   },
   refResolver: {
     buildLocalReference(json, _baseUri, _fragment, i) {
-      return json['$id']?.toString() || `def-${i}`;
+      const id = json['$id'];
+      if (typeof id === 'string') {
+        return id;
+      }
+      return `def-${i}`;
     },
   },
 };
@@ -88,11 +92,11 @@ const defaultSwaggerUiConfig: FastifySwaggerUiOptions = {
 
 /**
  * Swagger plugin for automatic API documentation
- * 
+ *
  * This plugin sets up Swagger/OpenAPI documentation for your Fastify application.
  * It automatically generates documentation based on your route schemas and provides
  * an interactive UI for testing endpoints.
- * 
+ *
  * Features:
  * - Automatic OpenAPI 3.0 spec generation
  * - Interactive Swagger UI
@@ -104,14 +108,11 @@ async function swaggerPlugin(
   fastify: FastifyInstance,
   options: SwaggerPluginOptions = {}
 ): Promise<void> {
-  const {
-    swagger: swaggerOpts = {},
-    swaggerUi: swaggerUiOpts = {},
-  } = options;
+  const { swagger: swaggerOpts = {}, swaggerUi: swaggerUiOpts = {} } = options;
 
   // Register Swagger documentation generator
   if (swaggerOpts.enabled !== false) {
-    const swaggerConfig: FastifyDynamicSwaggerOptions = {
+    const swaggerConfig = {
       ...defaultSwaggerConfig,
       ...swaggerOpts,
       openapi: {
@@ -120,8 +121,8 @@ async function swaggerPlugin(
         info: {
           ...defaultSwaggerConfig.openapi?.info,
           ...swaggerOpts.openapi?.info,
-        },
-        servers: swaggerOpts.openapi?.servers || defaultSwaggerConfig.openapi?.servers,
+        } as any,
+        servers: (swaggerOpts.openapi?.servers || defaultSwaggerConfig.openapi?.servers) as any,
         components: {
           ...defaultSwaggerConfig.openapi?.components,
           ...swaggerOpts.openapi?.components,
@@ -129,27 +130,27 @@ async function swaggerPlugin(
             ...defaultSwaggerConfig.openapi?.components?.securitySchemes,
             ...swaggerOpts.openapi?.components?.securitySchemes,
           },
-        },
+        } as any,
       },
     };
 
-    await fastify.register(swagger, swaggerConfig);
+    await fastify.register(swagger, swaggerConfig as any);
     fastify.log.info('Swagger documentation registered');
   }
 
-  // Register Swagger UI
-  if (swaggerUiOpts.enabled !== false) {
-    const swaggerUiConfig: FastifySwaggerUiOptions = {
+  // Register Swagger UI (only if Swagger is also enabled)
+  if (swaggerUiOpts.enabled !== false && swaggerOpts.enabled !== false) {
+    const swaggerUiConfig = {
       ...defaultSwaggerUiConfig,
       ...swaggerUiOpts,
       uiConfig: {
         ...defaultSwaggerUiConfig.uiConfig,
         ...swaggerUiOpts.uiConfig,
       },
-    };
+    } as any;
 
     await fastify.register(swaggerUi, swaggerUiConfig);
-    
+
     const routePrefix = swaggerUiConfig.routePrefix || '/docs';
     fastify.log.info(`Swagger UI available at ${routePrefix}`);
   }

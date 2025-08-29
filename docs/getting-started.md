@@ -213,23 +213,6 @@ class UserController {
 
 ## Advanced Features
 
-### Authentication
-
-Add authentication to controllers or individual routes:
-
-```typescript
-import { Auth, jwtAuthMiddleware } from '@jimmies-workspace/fastify-kick-start';
-
-@Auth(jwtAuthMiddleware({ secret: 'your-secret' }))
-@Controller('/protected')
-export class ProtectedController {
-  @Get('/data')
-  async getProtectedData(req: any) {
-    // req.user contains decoded JWT payload
-    return { data: 'secret' };
-  }
-}
-```
 
 ### Middleware
 
@@ -275,7 +258,6 @@ const app = await createServer()
 
 - Check out the [examples](../examples/) directory for complete working examples
 - Read the [API Reference](./api-reference.md) for detailed documentation
-- Learn about [Authentication](./authentication.md) strategies
 - Explore [Middleware](./middleware.md) options
 - See [Deployment](./deployment.md) best practices
 

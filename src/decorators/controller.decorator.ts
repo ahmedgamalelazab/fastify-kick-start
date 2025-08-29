@@ -4,12 +4,12 @@ import { METADATA_KEYS } from '../types';
 
 /**
  * @Controller decorator for marking classes as HTTP controllers
- * 
+ *
  * This decorator marks a class as a controller and optionally sets a route prefix.
  * It initializes the metadata required for route registration.
- * 
+ *
  * @param prefix - Optional route prefix for all routes in this controller
- * 
+ *
  * @example
  * ```typescript
  * @Controller('/api/users')
@@ -17,7 +17,7 @@ import { METADATA_KEYS } from '../types';
  *   // All routes will be prefixed with /api/users
  * }
  * ```
- * 
+ *
  * @example
  * ```typescript
  * @Controller()
@@ -31,7 +31,7 @@ export const Controller =
   target => {
     // Set the controller marker
     Reflect.defineMetadata(METADATA_KEYS.CONTROLLER, true, target);
-    
+
     // Set the prefix (empty string if not provided)
     Reflect.defineMetadata(METADATA_KEYS.PREFIX, prefix || '', target);
 

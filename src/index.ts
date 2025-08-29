@@ -1,13 +1,13 @@
 /**
  * @fileoverview Fastify Kick-Start Library
- * 
+ *
  * A comprehensive, reusable Fastify library with decorators, plugins, and Swagger integration.
  * This library provides everything you need to quickly build production-ready REST APIs.
- * 
+ *
  * @example
  * ```typescript
  * import { Controller, Get, createQuickServer } from '@jimmies-workspace/fastify-kick-start';
- * 
+ *
  * @Controller('/api/users')
  * class UserController {
  *   @Get('/')
@@ -15,7 +15,7 @@
  *     return { users: [] };
  *   }
  * }
- * 
+ *
  * const app = await createQuickServer([UserController]);
  * await app.listen({ port: 3000 });
  * ```

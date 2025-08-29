@@ -4,13 +4,13 @@ import { METADATA_KEYS } from '../types';
 
 /**
  * @Prefix decorator for adding route prefixes to controllers
- * 
+ *
  * This decorator allows you to add a prefix to all routes in a controller.
  * It can be used in combination with @Controller to create nested prefixes.
  * Multiple @Prefix decorators can be stacked to create complex route hierarchies.
- * 
+ *
  * @param prefix - The prefix to add to all routes in the controller
- * 
+ *
  * @example
  * ```typescript
  * @Prefix('/api')
@@ -19,7 +19,7 @@ import { METADATA_KEYS } from '../types';
  *   // Routes will be prefixed with /api/v1/users
  * }
  * ```
- * 
+ *
  * @example
  * ```typescript
  * @Prefix('/api')
@@ -56,19 +56,19 @@ export const Prefix =
  */
 export const normalizePath = (path: string): string => {
   if (!path || path === '/') return '';
-  
+
   let normalized = path;
-  
+
   // Remove leading slash
   if (normalized.startsWith('/')) {
     normalized = normalized.slice(1);
   }
-  
+
   // Remove trailing slash
   if (normalized.endsWith('/')) {
     normalized = normalized.slice(0, -1);
   }
-  
+
   return normalized;
 };
 
@@ -77,9 +77,9 @@ export const normalizePath = (path: string): string => {
  */
 export const combinePaths = (...paths: (string | undefined)[]): string => {
   const validPaths = paths
-    .filter(p => p && p.length > 0)
-    .map(normalizePath)
+    .filter((p): p is string => p != null && p.length > 0)
+    .map(p => normalizePath(p))
     .filter(p => p.length > 0);
-    
+
   return validPaths.length > 0 ? `/${validPaths.join('/')}` : '/';
 };
