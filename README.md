@@ -6,6 +6,7 @@ A comprehensive, reusable Fastify library with decorators, plugins, and Swagger 
 
 - 🎯 **Decorator-based Controllers** - Clean, annotation-driven API development
 - 📚 **Auto-generated Documentation** - Swagger/OpenAPI 3.0 with interactive UI
+- 🔧 **Smart Dependency Injection** - Multi-container support (Awilix, InversifyJS, TSyringe, custom)
 - 🛡️ **Security Middleware** - Rate limiting, CORS, security headers, and more
 - 🔧 **Highly Configurable** - Flexible server builder with sensible defaults
 - 📦 **Plugin Architecture** - Extensible with custom plugins
@@ -44,6 +45,44 @@ class UserController {
 
 // Create and start server
 const app = await createQuickServer([UserController]);
+await app.listen({ port: 3000 });
+```
+
+### With Dependency Injection (Awilix)
+
+```typescript
+import { createContainer, asClass } from 'awilix';
+import { Controller, Get, createServer } from '@jimmy-nitron/fastify-kick-start';
+
+// Services
+class UserService {
+  async getUsers() {
+    return [{ id: 1, name: 'John Doe' }];
+  }
+}
+
+// Controller with DI
+@Controller('/api/users')
+class UserController {
+  constructor(private readonly cradle: { userService: UserService }) {}
+
+  @Get('/')
+  async getUsers() {
+    return await this.cradle.userService.getUsers();
+  }
+}
+
+// Setup with Awilix
+const container = createContainer();
+container.register({
+  userService: asClass(UserService).singleton(),
+});
+
+const app = await createServer()
+  .withAwilix(container, { enableRequestScoping: true })
+  .withControllers([UserController])
+  .build();
+
 await app.listen({ port: 3000 });
 ```
 

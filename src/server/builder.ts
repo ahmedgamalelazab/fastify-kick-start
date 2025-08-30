@@ -198,7 +198,7 @@ export class FastifyServerBuilder {
 
     // Register custom plugins
     for (const { plugin, options } of this.customPlugins) {
-      await app.register(plugin as any, options as any);
+      await app.register(plugin, options as any);
     }
 
     // Register controllers
