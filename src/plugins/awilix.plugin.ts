@@ -45,9 +45,6 @@ function awilixPlugin(fastify: FastifyInstance, options: AwilixPluginOptions): v
   // Decorate Fastify instance with container
   fastify.decorate('diContainer', container);
 
-  // For backward compatibility, also add direct cradle access
-  fastify.decorate('diCradle', container.cradle);
-
   // Decorate request with scoped container access
   if (enableRequestScoping) {
     fastify.decorateRequest('diScope', {

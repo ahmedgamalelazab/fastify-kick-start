@@ -122,11 +122,8 @@ function diBridgePlugin(fastify: FastifyInstance, options: DIBridgeOptions): voi
   fastify.decorate('diContainer', container);
   fastify.decorate('diResolver', resolver);
 
-  // For Awilix compatibility, also add cradle access
-  const cradle = resolver.getCradle();
-  if (cradle && cradle !== container) {
-    fastify.decorate('diCradle', cradle);
-  }
+  // Container is accessible via fastify.diContainer
+  // Users can access cradle via fastify.diContainer.cradle if needed
 
   fastify.log.info(`DI Bridge initialized with container type: ${(resolver as any).containerType}`);
 }
@@ -146,6 +143,5 @@ declare module 'fastify' {
   interface FastifyInstance {
     diContainer: DIContainer;
     diResolver: DIResolver;
-    diCradle?: unknown;
   }
 }

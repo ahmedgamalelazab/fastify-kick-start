@@ -56,7 +56,6 @@ describe('Awilix Plugin', () => {
 
       // Verify decorations exist
       expect(app.diContainer).toBe(mockContainer);
-      expect(app.diCradle).toBe(mockContainer.cradle);
     });
 
     it('should register with default options', async () => {
@@ -68,7 +67,6 @@ describe('Awilix Plugin', () => {
         .build();
 
       expect(app.diContainer).toBe(mockContainer);
-      expect(app.diCradle).toBe(mockContainer.cradle);
     });
   });
 
@@ -352,7 +350,6 @@ describe('Awilix Plugin', () => {
         .build();
 
       expect(app.diContainer).toBe(mockContainer);
-      expect(app.diCradle).toBe(mockContainer.cradle);
     });
 
     it('should use default options with server builder', async () => {
@@ -362,7 +359,6 @@ describe('Awilix Plugin', () => {
         .build();
 
       expect(app.diContainer).toBe(mockContainer);
-      expect(app.diCradle).toBe(mockContainer.cradle);
     });
   });
 });

@@ -236,8 +236,8 @@ describe('DI Bridge Plugin', () => {
       })
       .build();
 
-    // Should detect as Awilix and provide cradle access
-    expect(app.diCradle).toBe(container.cradle);
+    // Should detect as Awilix - cradle accessible via diContainer
+    expect(app.diContainer.cradle).toBe(container.cradle);
   });
 
   it('should handle container without cradle', async () => {
@@ -251,8 +251,8 @@ describe('DI Bridge Plugin', () => {
       })
       .build();
 
-    // Should not have diCradle for non-Awilix containers
-    expect(app.diCradle).toBeUndefined();
+    // Non-Awilix containers don't have cradle property
+    expect(app.diContainer.cradle).toBeUndefined();
   });
 
   it('should work with explicit container type override', async () => {

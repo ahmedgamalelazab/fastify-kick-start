@@ -1,6 +1,6 @@
 {
   "name": "@jimmy-nitron/fastify-kick-start",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "A comprehensive, reusable Fastify library with decorators, plugins, and Swagger integration",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
