@@ -4,6 +4,8 @@ import fastify, { FastifyInstance, FastifyServerOptions } from 'fastify';
 
 import { controllerPluginFactory } from '../plugins/controller.plugin';
 import { swaggerPluginFactory } from '../plugins/swagger.plugin';
+import { diBridgePluginFactory, DIContainer } from '../plugins/di-bridge.plugin';
+import { awilixPluginFactory, AwilixContainer } from '../plugins/awilix.plugin';
 import { ControllerConstructor, ServerBuilderOptions } from '../types';
 
 /**
@@ -22,7 +24,11 @@ export class FastifyServerBuilder {
   private fastifyOptions: FastifyServerOptions = {};
   private builderOptions: ServerBuilderOptions = {};
   private controllers: ControllerConstructor[] = [];
-  private customPlugins: Array<{ plugin: any; options?: any }> = [];
+  private customPlugins: Array<{ plugin: any; options?: unknown }> = [];
+  // Note: These are stored for potential future use
+  // Currently, containers are passed directly to plugins
+  // private diContainer?: DIContainer;
+  // private awilixContainer?: AwilixContainer;
 
   /**
    * Set Fastify server options
@@ -106,8 +112,52 @@ export class FastifyServerBuilder {
   /**
    * Register a custom plugin
    */
-  withPlugin(plugin: any, options?: any): this {
+  withPlugin(plugin: unknown, options?: unknown): this {
     this.customPlugins.push({ plugin, options });
+    return this;
+  }
+
+  /**
+   * Configure dependency injection with a generic IOC container
+   */
+  withDependencyInjection(
+    container: DIContainer,
+    options?: {
+      containerType?: 'awilix' | 'inversify' | 'tsyringe' | 'generic';
+      autoDetect?: boolean;
+    }
+  ): this {
+    this.customPlugins.push({
+      plugin: diBridgePluginFactory,
+      options: {
+        container,
+        containerType: options?.containerType,
+        autoDetect: options?.autoDetect ?? true,
+      },
+    });
+    return this;
+  }
+
+  /**
+   * Configure Awilix dependency injection container
+   */
+  withAwilix(
+    container: AwilixContainer,
+    options?: {
+      disposeOnResponse?: boolean;
+      disposeOnClose?: boolean;
+      enableRequestScoping?: boolean;
+    }
+  ): this {
+    this.customPlugins.push({
+      plugin: awilixPluginFactory,
+      options: {
+        container,
+        disposeOnResponse: options?.disposeOnResponse ?? true,
+        disposeOnClose: options?.disposeOnClose ?? true,
+        enableRequestScoping: options?.enableRequestScoping ?? true,
+      },
+    });
     return this;
   }
 
@@ -148,7 +198,7 @@ export class FastifyServerBuilder {
 
     // Register custom plugins
     for (const { plugin, options } of this.customPlugins) {
-      await app.register(plugin, options);
+      await app.register(plugin as any, options as any);
     }
 
     // Register controllers

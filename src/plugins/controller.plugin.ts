@@ -24,7 +24,7 @@ import {
  * registers them with the Fastify instance. It supports:
  * - Route registration with proper HTTP methods and paths
  * - Middleware execution (controller-level and route-level)
- * - Dependency injection
+ * - Smart dependency injection with multiple IOC container support
  * - Route options (schema, hooks, etc.)
  */
 function controllerPlugin(fastify: FastifyInstance, options: ControllerPluginOptions): void {
@@ -41,15 +41,39 @@ function controllerPlugin(fastify: FastifyInstance, options: ControllerPluginOpt
       throw new Error(`${ControllerClass.name} is not decorated with @Controller`);
     }
 
-    // Create controller instance
-    let controllerInstance: any;
-    if (dependencyInjection?.resolver) {
+    // Create controller instance using smart DI resolution
+    let controllerInstance: unknown;
+    // Priority 1: Use smart DI resolver if available (from DI bridge plugin)
+    if (fastify.diResolver) {
+      controllerInstance = fastify.diResolver.resolve(ControllerClass);
+      fastify.log.debug(`Controller ${ControllerClass.name} instantiated via DI resolver`);
+    }
+    // Priority 2: Legacy support - custom resolver function
+    else if (dependencyInjection?.resolver) {
       controllerInstance = dependencyInjection.resolver(ControllerClass);
-    } else if (dependencyInjection?.container) {
-      // Generic container support
+      fastify.log.debug(`Controller ${ControllerClass.name} instantiated via custom resolver`);
+    }
+    // Priority 3: Legacy support - generic container
+    else if (dependencyInjection?.container) {
       controllerInstance = new ControllerClass(dependencyInjection.container);
-    } else {
+      fastify.log.debug(`Controller ${ControllerClass.name} instantiated with container injection`);
+    }
+    // Priority 4: Check if DI container is available on Fastify instance (Awilix style)
+    else if (fastify.diContainer?.cradle) {
+      controllerInstance = new ControllerClass(fastify.diContainer.cradle);
+      fastify.log.debug(`Controller ${ControllerClass.name} instantiated with Awilix cradle`);
+    }
+    // Priority 5: Check if generic DI container is available
+    else if (fastify.diContainer) {
+      controllerInstance = new ControllerClass(fastify.diContainer);
+      fastify.log.debug(`Controller ${ControllerClass.name} instantiated with generic container`);
+    }
+    // Fallback: No DI - instantiate without dependencies
+    else {
       controllerInstance = new ControllerClass();
+      fastify.log.warn(
+        `Controller ${ControllerClass.name} instantiated without dependencies - consider using DI bridge plugin`
+      );
     }
 
     // Get controller metadata
@@ -76,9 +100,9 @@ function controllerPlugin(fastify: FastifyInstance, options: ControllerPluginOpt
  */
 function registerRoute(
   fastify: FastifyInstance,
-  controllerInstance: any,
+  controllerInstance: unknown,
   route: RouteDefinition,
-  routeOpts: any,
+  routeOpts: unknown,
   basePath: string,
   ControllerClass: ControllerConstructor
 ): void {
@@ -99,7 +123,7 @@ function registerRoute(
   // Register route with Fastify
   if (routeOpts) {
     // Clone options to avoid mutation
-    const opts = { ...routeOpts };
+    const opts = { ...routeOpts } as any;
 
     // Add preHandler hooks for middleware
     if (middleware.length > 0) {
@@ -128,13 +152,16 @@ function registerRoute(
  * Create a route handler that executes middleware
  */
 function createRouteHandler(
-  controllerInstance: any,
+  controllerInstance: unknown,
   methodName: string | symbol,
   _middleware: MiddlewareFunction[]
-): (req: FastifyRequest, reply: FastifyReply) => Promise<any> {
+): (req: FastifyRequest, reply: FastifyReply) => Promise<unknown> {
   return async (req: FastifyRequest, reply: FastifyReply) => {
     // Execute the controller method
-    const result = await controllerInstance[methodName](req, reply);
+    const result = await (controllerInstance as Record<string | symbol, any>)[methodName](
+      req,
+      reply
+    );
 
     // If the controller method didn't send a response, send the result
     if (!reply.sent && result !== undefined) {

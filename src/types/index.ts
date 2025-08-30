@@ -49,12 +49,32 @@ export type MiddlewareFunction = (
 ) => Promise<void> | void;
 
 /**
- * Controller plugin options
+ * Dependency injection container interface
+ */
+export interface DIContainer {
+  resolve<T = any>(name: string | symbol): T;
+  cradle?: any; // For Awilix-style containers
+  get?<T = any>(name: string | symbol): T; // For other container types
+  [key: string]: any;
+}
+
+/**
+ * DI resolver interface for smart dependency injection
+ */
+export interface DIResolver {
+  resolve<T = any>(target: new (...args: any[]) => T): T;
+  resolveByName<T = any>(name: string | symbol): T;
+  getCradle?(): any;
+}
+
+/**
+ * Controller plugin options with enhanced DI support
  */
 export interface ControllerPluginOptions {
   controllers: ControllerConstructor[];
   middleware?: MiddlewareFunction[];
   prefix?: string;
+  /** @deprecated Use DI bridge plugin instead for better container support */
   dependencyInjection?: {
     container?: any;
     resolver?: (controller: ControllerConstructor) => any;
