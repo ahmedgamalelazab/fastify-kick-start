@@ -9,6 +9,18 @@ import fastifyPlugin from 'fastify-plugin';
 export interface SwaggerPluginOptions {
   swagger?: {
     enabled?: boolean;
+    // Support both direct properties (for ServerBuilderOptions compatibility)
+    info?: {
+      title?: string;
+      description?: string;
+      version?: string;
+    };
+    servers?: Array<{ url: string; description?: string }>;
+    security?: any[];
+    components?: {
+      securitySchemes?: Record<string, any>;
+    };
+    // And nested openapi structure (for advanced usage)
     openapi?: FastifyDynamicSwaggerOptions['openapi'];
     refResolver?: FastifyDynamicSwaggerOptions['refResolver'];
     transform?: FastifyDynamicSwaggerOptions['transform'];
@@ -120,14 +132,26 @@ async function swaggerPlugin(
         ...swaggerOpts.openapi,
         info: {
           ...defaultSwaggerConfig.openapi?.info,
+          ...swaggerOpts.info,
           ...swaggerOpts.openapi?.info,
         } as any,
-        servers: (swaggerOpts.openapi?.servers || defaultSwaggerConfig.openapi?.servers) as any,
+        servers:
+          swaggerOpts.servers && swaggerOpts.servers.length > 0
+            ? swaggerOpts.servers
+            : swaggerOpts.openapi?.servers && swaggerOpts.openapi.servers.length > 0
+              ? swaggerOpts.openapi.servers
+              : defaultSwaggerConfig.openapi?.servers,
+        security:
+          swaggerOpts.security ||
+          swaggerOpts.openapi?.security ||
+          defaultSwaggerConfig.openapi?.security,
         components: {
           ...defaultSwaggerConfig.openapi?.components,
+          ...swaggerOpts.components,
           ...swaggerOpts.openapi?.components,
           securitySchemes: {
             ...defaultSwaggerConfig.openapi?.components?.securitySchemes,
+            ...swaggerOpts.components?.securitySchemes,
             ...swaggerOpts.openapi?.components?.securitySchemes,
           },
         } as any,

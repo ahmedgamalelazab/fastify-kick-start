@@ -5,6 +5,27 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.3] - 2025-01-30
+
+### Fixed
+
+- **Swagger Plugin**: Fixed plugin timeout issue that was causing "Plugin did not start in time" error
+- **Swagger Plugin**: Simplified configuration merging logic to prevent complex object structure issues
+- **Swagger Plugin**: Improved error handling and type safety in plugin registration
+
+## [1.1.2] - 2025-01-30
+
+### Fixed
+
+- **Swagger Plugin**: Fixed bug where custom servers configuration was not being passed correctly to OpenAPI spec
+- **Swagger Plugin**: Enhanced SwaggerPluginOptions interface to support both direct properties and nested openapi structure for better compatibility
+- **Swagger Plugin**: Fixed handling of empty servers array to properly fall back to default localhost server
+- **Server Builder**: Fixed createQuickServer function to properly structure swagger configuration
+
+### Added
+
+- **Tests**: Comprehensive unit tests for multiple servers configuration covering various scenarios including edge cases
+
 ## [1.1.1] - 2025-01-30
 
 ### Fixed
